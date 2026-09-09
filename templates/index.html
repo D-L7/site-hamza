@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ء - المنصة الرقمية السريعة</title>
-    <meta name="description" content="موقع ء - تطبيق صفحة واحدة مميز مع شريط جانبي ومحرك بحث فوري مبني بـ Python Django">
+    <meta name="description" content="موقع ء - تطبيق صفحة واحدة مميز مع شريط جانبي ومحرك بحث فوري ونظام مستخدمين مبني بـ Python Django">
     
     <!-- Google Fonts: Cairo & Readex Pro -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -45,12 +45,21 @@
                     <i class="bi bi-search"></i>
                     <span>صفحة البحث</span>
                 </a>
+                <a href="/admin/" target="_blank" class="menu-item admin-only-link hidden" id="adminPanelLink">
+                    <i class="bi bi-shield-lock-fill"></i>
+                    <span>لوحة التحكم (Django Admin)</span>
+                </a>
             </nav>
 
             <div class="sidebar-footer">
+                <!-- User Account Box -->
+                <div class="user-box" id="userBox">
+                    <!-- Dynamic rendering by JS -->
+                </div>
+                
                 <div class="status-indicator">
                     <span class="status-dot"></span>
-                    <span class="status-text">Django | جاهز للنشر</span>
+                    <span class="status-text">Django Auth | مفعّل</span>
                 </div>
                 <div class="footer-note">موقع ء &copy; 2026</div>
             </div>
@@ -68,7 +77,9 @@
                 </button>
                 <div class="top-bar-title" id="topBarTitle">الرئيسية</div>
                 <div class="top-bar-actions">
-                    <span class="badge-framework"><i class="bi bi-code-slash"></i> Python Django</span>
+                    <button class="btn btn-outline btn-sm" id="topLoginBtn">
+                        <i class="bi bi-person-fill"></i> <span id="topLoginText">تسجيل الدخول</span>
+                    </button>
                 </div>
             </header>
 
@@ -79,22 +90,31 @@
                     <div class="hero-card">
                         <div class="hero-content">
                             <span class="hero-badge"><i class="bi bi-stars"></i> مرحباً بك في منصة ء</span>
-                            <h2 class="hero-title">بساطة، سرعة، وكفاءة عالية</h2>
+                            <h2 class="hero-title">بساطة، سرعة، ونظام إدارة متكامل</h2>
                             <p class="hero-desc">
-                                موقع متكامل بصفحة واحدة وتنقل سلس مع شريط جانبي تفاعلي ومحرك بحث فوري معالج بلغة بايثون ديجانجو وجاهز للنشر المباشر على منصة Fly.io.
+                                موقع متكامل بصفحة واحدة وتنقل سلس مع شريط جانبي تفاعلي، نظام تسجيل دخول وحساب أدمن محمي، ومحرك بحث فوري معالج بلغة بايثون ديجانجو وجاهز للنشر على Fly.io.
                             </p>
                             <div class="hero-actions">
                                 <button class="btn btn-primary" onclick="switchView('searchView')">
                                     <i class="bi bi-search"></i> التوجه إلى صفحة البحث
                                 </button>
-                                <a href="https://fly.io" target="_blank" rel="noopener" class="btn btn-outline">
-                                    <i class="bi bi-cloud-arrow-up"></i> معلومات Fly.io
+                                <a href="/admin/" target="_blank" class="btn btn-outline">
+                                    <i class="bi bi-shield-lock"></i> لوحة تحكم الأدمن
                                 </a>
                             </div>
                         </div>
                         <div class="hero-illustration">
                             <div class="glowing-orb"></div>
                             <span class="hero-giant-symbol">ء</span>
+                        </div>
+                    </div>
+
+                    <!-- Account Info Banner (If Admin Logged In) -->
+                    <div class="admin-welcome-banner hidden" id="adminWelcomeBanner">
+                        <div class="banner-icon"><i class="bi bi-person-check-fill"></i></div>
+                        <div class="banner-info">
+                            <h4>مسجل كـ مسؤول (Admin)</h4>
+                            <p>أهلاً بك <strong id="adminUsernameDisplay">admin</strong>! لديك كامل الصلاحيات لإدارة الموقع والدخول إلى <a href="/admin/" target="_blank">لوحة تحكم Django Admin</a>.</p>
                         </div>
                     </div>
 
@@ -118,7 +138,7 @@
                             <div class="stat-icon icon-green"><i class="bi bi-shield-check"></i></div>
                             <div class="stat-details">
                                 <span class="stat-value">100%</span>
-                                <span class="stat-label">توافق مع Fly.io</span>
+                                <span class="stat-label">أمان ومحمي</span>
                             </div>
                         </div>
                         <div class="stat-card">
@@ -140,14 +160,14 @@
                                 <p>تنقل سلس ومباشر بين الصفحة الرئيسية وصفحة البحث دون الحاجة لإعادة تحميل الصفحة.</p>
                             </div>
                             <div class="feature-card">
+                                <div class="feature-icon"><i class="bi bi-person-badge-fill"></i></div>
+                                <h4>نظام مستخدمين وأدمن</h4>
+                                <p>حساب أدمن مجهز لدخول لوحة التحكم وسلاسل الأمان في إطار Django Auth.</p>
+                            </div>
+                            <div class="feature-card">
                                 <div class="feature-icon"><i class="bi bi-search-heart"></i></div>
                                 <h4>بحث فوري مع Django API</h4>
                                 <p>محرك بحث ديناميكي يعتمد على نقاط النهاية السريعة إرجاع النتائج بتنسيق JSON دقيق.</p>
-                            </div>
-                            <div class="feature-card">
-                                <div class="feature-icon"><i class="bi bi-box-seam-fill"></i></div>
-                                <h4>جاهز للنشر بالحاويات</h4>
-                                <p>يحتوي على ملفات Dockerfile و fly.toml الجاهزة للرفع المباشر إلى منصة Fly.io.</p>
                             </div>
                         </div>
                     </div>
@@ -201,6 +221,42 @@
                 </section>
             </div>
         </main>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal-overlay hidden" id="loginModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3><i class="bi bi-shield-lock-fill"></i> تسجيل الدخول - موقع ء</h3>
+                <button class="modal-close-btn" id="closeLoginModalBtn"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <form id="loginForm" class="modal-body">
+                <div class="form-error hidden" id="loginErrorMsg"></div>
+                <div class="form-group">
+                    <label for="loginUsername">اسم المستخدم</label>
+                    <div class="input-with-icon">
+                        <i class="bi bi-person"></i>
+                        <input type="text" id="loginUsername" placeholder="مثال: admin" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">كلمة المرور</label>
+                    <div class="input-with-icon">
+                        <i class="bi bi-key"></i>
+                        <input type="password" id="loginPassword" placeholder="••••••••" required>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary w-100" id="loginSubmitBtn">
+                        تسجيل الدخول
+                    </button>
+                </div>
+                <div class="modal-hint">
+                    بيانات حساب الأدمن الافتراضية:<br>
+                    اسم المستخدم: <code>admin</code> | كلمة المرور: <code>Admin123456!</code>
+                </div>
+            </form>
+        </div>
     </div>
 
     <!-- App JavaScript -->

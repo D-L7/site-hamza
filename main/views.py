@@ -1,5 +1,8 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import JsonResponse
+from django.contrib.auth import authenticate, login, logout
+from django.views.decorators.csrf import ensure_csrf_cookie
+import json
 
 # Sample searchable dataset for site "ء"
 SEARCH_DATABASE = [
@@ -65,11 +68,13 @@ SEARCH_DATABASE = [
     }
 ]
 
+@ensure_csrf_cookie
 def index(request):
     """Render the single-page web app for site 'ء'."""
     return render(request, 'index.html', {
         'site_name': 'ء',
-        'items_count': len(SEARCH_DATABASE)
+        'items_count': len(SEARCH_DATABASE),
+        'user': request.user
     })
 
 def search_api(request):
@@ -79,11 +84,9 @@ def search_api(request):
 
     results = []
     for item in SEARCH_DATABASE:
-        # Category filter
         if category != 'all' and item['category_slug'] != category:
             continue
 
-        # Query text match in title, description, or tags
         if query:
             match_title = query in item['title'].lower()
             match_desc = query in item['description'].lower()
@@ -100,6 +103,49 @@ def search_api(request):
         'count': len(results),
         'results': results
     })
+
+def login_api(request):
+    """API endpoint for logging in users."""
+    if request.method != 'POST':
+        return JsonResponse({'status': 'error', 'message': 'طريقة الطلب غير مدعومة'}, status=405)
+
+    try:
+        data = json.loads(request.body)
+        username = data.get('username', '').strip()
+        password = data.get('password', '').strip()
+
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return JsonResponse({
+                'status': 'success',
+                'message': 'تم تسجيل الدخول بنجاح',
+                'user': {
+                    'username': user.username,
+                    'email': user.email,
+                    'is_superuser': user.is_superuser
+                }
+            })
+        else:
+            return JsonResponse({'status': 'error', 'message': 'اسم المستخدم أو كلمة المرور غير صحيحة'}, status=400)
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
+def logout_api(request):
+    """API endpoint for logging out users."""
+    logout(request)
+    return JsonResponse({'status': 'success', 'message': 'تم تسجيل الخروج بنجاح'})
+
+def user_status_api(request):
+    """Returns the current authentication status of the user."""
+    if request.user.is_authenticated:
+        return JsonResponse({
+            'is_authenticated': True,
+            'username': request.user.username,
+            'email': request.user.email,
+            'is_superuser': request.user.is_superuser
+        })
+    return JsonResponse({'is_authenticated': False})
 
 def health_check(request):
     """Health check endpoint for Fly.io deployment."""
