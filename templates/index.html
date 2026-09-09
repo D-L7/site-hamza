@@ -1,0 +1,209 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ء - المنصة الرقمية السريعة</title>
+    <meta name="description" content="موقع ء - تطبيق صفحة واحدة مميز مع شريط جانبي ومحرك بحث فوري مبني بـ Python Django">
+    
+    <!-- Google Fonts: Cairo & Readex Pro -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&family=Readex+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <!-- App Stylesheet -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="brand-logo">
+                    <span class="logo-symbol">ء</span>
+                </div>
+                <div class="brand-info">
+                    <h1 class="brand-title">ء</h1>
+                    <span class="brand-subtitle">المنصة الرقمية</span>
+                </div>
+                <button class="mobile-close-btn" id="mobileCloseBtn" aria-label="إغلاق القائمة">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+
+            <nav class="sidebar-menu">
+                <div class="menu-label">التنقل الرئيسي</div>
+                <a href="#home" class="menu-item active" data-view="homeView">
+                    <i class="bi bi-house-door-fill"></i>
+                    <span>الرئيسية</span>
+                </a>
+                <a href="#search" class="menu-item" data-view="searchView">
+                    <i class="bi bi-search"></i>
+                    <span>صفحة البحث</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="status-indicator">
+                    <span class="status-dot"></span>
+                    <span class="status-text">Django | جاهز للنشر</span>
+                </div>
+                <div class="footer-note">موقع ء &copy; 2026</div>
+            </div>
+        </aside>
+
+        <!-- Main Content Overlay for Mobile -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+        <!-- Main Content Area -->
+        <main class="main-wrapper">
+            <!-- Top Mobile Bar -->
+            <header class="top-bar">
+                <button class="mobile-toggle-btn" id="mobileToggleBtn" aria-label="فتح القائمة">
+                    <i class="bi bi-list"></i>
+                </button>
+                <div class="top-bar-title" id="topBarTitle">الرئيسية</div>
+                <div class="top-bar-actions">
+                    <span class="badge-framework"><i class="bi bi-code-slash"></i> Python Django</span>
+                </div>
+            </header>
+
+            <div class="content-container">
+                <!-- VIEW 1: HOME SECTION (الرئيسية) -->
+                <section class="view-section active" id="homeView">
+                    <!-- Hero Section -->
+                    <div class="hero-card">
+                        <div class="hero-content">
+                            <span class="hero-badge"><i class="bi bi-stars"></i> مرحباً بك في منصة ء</span>
+                            <h2 class="hero-title">بساطة، سرعة، وكفاءة عالية</h2>
+                            <p class="hero-desc">
+                                موقع متكامل بصفحة واحدة وتنقل سلس مع شريط جانبي تفاعلي ومحرك بحث فوري معالج بلغة بايثون ديجانجو وجاهز للنشر المباشر على منصة Fly.io.
+                            </p>
+                            <div class="hero-actions">
+                                <button class="btn btn-primary" onclick="switchView('searchView')">
+                                    <i class="bi bi-search"></i> التوجه إلى صفحة البحث
+                                </button>
+                                <a href="https://fly.io" target="_blank" rel="noopener" class="btn btn-outline">
+                                    <i class="bi bi-cloud-arrow-up"></i> معلومات Fly.io
+                                </a>
+                            </div>
+                        </div>
+                        <div class="hero-illustration">
+                            <div class="glowing-orb"></div>
+                            <span class="hero-giant-symbol">ء</span>
+                        </div>
+                    </div>
+
+                    <!-- Statistics Grid -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon icon-blue"><i class="bi bi-lightning-charge-fill"></i></div>
+                            <div class="stat-details">
+                                <span class="stat-value">0.02 ث</span>
+                                <span class="stat-label">سرعة الاستجابة</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon icon-purple"><i class="bi bi-database-fill-check"></i></div>
+                            <div class="stat-details">
+                                <span class="stat-value">{{ items_count }}</span>
+                                <span class="stat-label">عنصر مفهرس</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon icon-green"><i class="bi bi-shield-check"></i></div>
+                            <div class="stat-details">
+                                <span class="stat-value">100%</span>
+                                <span class="stat-label">توافق مع Fly.io</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon icon-amber"><i class="bi bi-cpu-fill"></i></div>
+                            <div class="stat-details">
+                                <span class="stat-value">Django 5</span>
+                                <span class="stat-label">محرك النظام</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Highlights & Features Section -->
+                    <div class="features-section">
+                        <h3 class="section-heading"><i class="bi bi-grid-fill"></i> مميزات منصة ء</h3>
+                        <div class="features-grid">
+                            <div class="feature-card">
+                                <div class="feature-icon"><i class="bi bi-layout-sidebar-reverse"></i></div>
+                                <h4>قائمة جانبية تفاعلية</h4>
+                                <p>تنقل سلس ومباشر بين الصفحة الرئيسية وصفحة البحث دون الحاجة لإعادة تحميل الصفحة.</p>
+                            </div>
+                            <div class="feature-card">
+                                <div class="feature-icon"><i class="bi bi-search-heart"></i></div>
+                                <h4>بحث فوري مع Django API</h4>
+                                <p>محرك بحث ديناميكي يعتمد على نقاط النهاية السريعة إرجاع النتائج بتنسيق JSON دقيق.</p>
+                            </div>
+                            <div class="feature-card">
+                                <div class="feature-icon"><i class="bi bi-box-seam-fill"></i></div>
+                                <h4>جاهز للنشر بالحاويات</h4>
+                                <p>يحتوي على ملفات Dockerfile و fly.toml الجاهزة للرفع المباشر إلى منصة Fly.io.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VIEW 2: SEARCH SECTION (صفحة البحث) -->
+                <section class="view-section" id="searchView">
+                    <div class="search-header-card">
+                        <div class="search-title-area">
+                            <h2><i class="bi bi-search"></i> محرك البحث في موقع ء</h2>
+                            <p>ابحث عن المقالات، الأدوات، الخدمات، والمستندات بسرعة فائقة</p>
+                        </div>
+
+                        <!-- Search Input Bar -->
+                        <div class="search-bar-container">
+                            <i class="bi bi-search search-input-icon"></i>
+                            <input type="text" id="searchInput" class="search-input" placeholder="اكتب كلمتك للبحث هنا... (مثال: بحث، Django، أدوات)" autocomplete="off">
+                            <button class="search-clear-btn" id="searchClearBtn" aria-label="مسح البحث">
+                                <i class="bi bi-x-circle-fill"></i>
+                            </button>
+                        </div>
+
+                        <!-- Category Filters -->
+                        <div class="category-pills">
+                            <button class="pill-btn active" data-category="all">الكل</button>
+                            <button class="pill-btn" data-category="articles">مقالات</button>
+                            <button class="pill-btn" data-category="tools">أدوات</button>
+                            <button class="pill-btn" data-category="services">خدمات</button>
+                            <button class="pill-btn" data-category="docs">مستندات</button>
+                        </div>
+                    </div>
+
+                    <!-- Search Status & Meta Bar -->
+                    <div class="search-meta-bar">
+                        <span id="resultsCountText">جاري تحميل البيانات...</span>
+                        <span class="live-indicator"><i class="bi bi-arrow-repeat spin-icon"></i> متصل بـ Django API</span>
+                    </div>
+
+                    <!-- Search Results Grid -->
+                    <div class="results-grid" id="resultsGrid">
+                        <!-- Dynamic Cards generated by app.js -->
+                    </div>
+
+                    <!-- Empty Results State -->
+                    <div class="empty-state hidden" id="emptyState">
+                        <div class="empty-icon"><i class="bi bi-emoji-frown"></i></div>
+                        <h3>لم نجد نتائج تطابق بحثك</h3>
+                        <p>جرب كتابة كلمات بحث أخرى أو اختيار تصنيف مختلف.</p>
+                        <button class="btn btn-outline" id="resetSearchBtn">عرض كل النتائج</button>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- App JavaScript -->
+    <script src="{% static 'js/app.js' %}"></script>
+</body>
+</html>
