@@ -1,10 +1,10 @@
 /**
- * موقع ء - المنطق التفاعلي (Interactive JavaScript)
- * إدارة التنقل بين الصفحات والبحث الفوري وتطبيقات تسحيل الدخول ونظام المستخدمين عبر Django API
+ * موقع ء ريلز - المنطق التفاعلي (Interactive JavaScript)
+ * إدارة منصة الريلز، تذاكر الدعم الفني، وإنشاء حسابات المستخدمين بواسطة الأدمن
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-    // UI Elements
+    // Navigation Elements
     const menuItems = document.querySelectorAll('.menu-item');
     const viewSections = document.querySelectorAll('.view-section');
     const topBarTitle = document.getElementById('topBarTitle');
@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const mobileToggleBtn = document.getElementById('mobileToggleBtn');
     const mobileCloseBtn = document.getElementById('mobileCloseBtn');
     
+    // Search Elements
     const searchInput = document.getElementById('searchInput');
     const searchClearBtn = document.getElementById('searchClearBtn');
     const pillBtns = document.querySelectorAll('.pill-btn');
@@ -26,13 +27,36 @@ document.addEventListener('DOMContentLoaded', () => {
     const userBox = document.getElementById('userBox');
     const topLoginBtn = document.getElementById('topLoginBtn');
     const topLoginText = document.getElementById('topLoginText');
+    const adminMenuSection = document.getElementById('adminMenuSection');
     const adminPanelLink = document.getElementById('adminPanelLink');
     const adminWelcomeBanner = document.getElementById('adminWelcomeBanner');
     const adminUsernameDisplay = document.getElementById('adminUsernameDisplay');
+    const openCreateUserModalBtn = document.getElementById('openCreateUserModalBtn');
+    const quickAddUserBtn = document.getElementById('quickAddUserBtn');
+    
+    // Modals
     const loginModal = document.getElementById('loginModal');
     const closeLoginModalBtn = document.getElementById('closeLoginModalBtn');
     const loginForm = document.getElementById('loginForm');
     const loginErrorMsg = document.getElementById('loginErrorMsg');
+
+    const createUserModal = document.getElementById('createUserModal');
+    const closeCreateUserModalBtn = document.getElementById('closeCreateUserModalBtn');
+    const createUserForm = document.getElementById('createUserForm');
+    const createUserErrorMsg = document.getElementById('createUserErrorMsg');
+    const createUserSuccessMsg = document.getElementById('createUserSuccessMsg');
+
+    const replyTicketModal = document.getElementById('replyTicketModal');
+    const closeReplyTicketModalBtn = document.getElementById('closeReplyTicketModalBtn');
+    const replyTicketForm = document.getElementById('replyTicketForm');
+
+    // Tickets Elements
+    const createTicketForm = document.getElementById('createTicketForm');
+    const ticketsContainer = document.getElementById('ticketsContainer');
+    const ticketsCountBadge = document.getElementById('ticketsCountBadge');
+
+    // Reels Elements
+    const reelsGrid = document.getElementById('reelsGrid');
 
     // State Variables
     let currentView = 'homeView';
@@ -43,10 +67,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const viewTitles = {
         'homeView': 'الرئيسية',
-        'searchView': 'صفحة البحث'
+        'reelsView': 'منصة الريلزات',
+        'searchView': 'صفحة البحث',
+        'ticketsView': 'تذاكر الدعم الفني'
     };
 
-    // Helper: Get CSRF Cookie Token
     function getCookie(name) {
         let cookieValue = null;
         if (document.cookie && document.cookie !== '') {
@@ -63,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // =========================================================================
-    // 1. User Auth & Session Management
+    // 1. User Auth Status & Admin Controls
     // =========================================================================
     async function checkUserStatus() {
         try {
@@ -85,7 +110,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateUserUI(isAuthenticated, username = '', isSuperuser = false) {
         if (isAuthenticated) {
-            // Update User Box in Sidebar
             if (userBox) {
                 userBox.innerHTML = `
                     <div class="user-card-sm">
@@ -103,7 +127,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (logoutBtn) logoutBtn.addEventListener('click', performLogout);
             }
 
-            // Update Top bar button
             if (topLoginText) topLoginText.textContent = username;
             if (topLoginBtn) {
                 topLoginBtn.onclick = () => {
@@ -111,15 +134,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 };
             }
 
-            // Show Admin elements if superuser
             if (isSuperuser) {
-                if (adminPanelLink) adminPanelLink.classList.remove('hidden');
-                if (adminWelcomeBanner) adminWelcomeBanner.classList.remove('hidden');
+                const adminElements = document.querySelectorAll('.admin-only');
+                adminElements.forEach(el => el.classList.remove('hidden'));
                 if (adminUsernameDisplay) adminUsernameDisplay.textContent = username;
             }
 
         } else {
-            // Unauthenticated state
             if (userBox) {
                 userBox.innerHTML = `
                     <button class="btn btn-outline w-100 btn-sm" id="sidebarLoginBtn">
@@ -133,8 +154,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (topLoginText) topLoginText.textContent = 'تسجيل الدخول';
             if (topLoginBtn) topLoginBtn.onclick = openLoginModal;
 
-            if (adminPanelLink) adminPanelLink.classList.add('hidden');
-            if (adminWelcomeBanner) adminWelcomeBanner.classList.add('hidden');
+            const adminElements = document.querySelectorAll('.admin-only');
+            adminElements.forEach(el => el.classList.add('hidden'));
         }
     }
 
@@ -154,7 +175,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Login Form Submit
     if (loginForm) {
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -189,8 +209,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (response.ok && data.status === 'success') {
                     closeLoginModal();
                     updateUserUI(true, data.user.username, data.user.is_superuser);
-                    usernameInput.value = '';
-                    passwordInput.value = '';
+                    loadTickets(); // Refresh tickets with admin privileges
                 } else {
                     if (loginErrorMsg) {
                         loginErrorMsg.textContent = data.message || 'خطأ في بيانات الدخول';
@@ -211,7 +230,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Logout Process
     async function performLogout() {
         try {
             await fetch('/api/logout/', {
@@ -221,13 +239,86 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
             updateUserUI(false);
+            loadTickets();
         } catch (err) {
             console.error('Logout error:', err);
         }
     }
 
     // =========================================================================
-    // 2. Navigation & View Switcher (SPA)
+    // 2. Admin Create User Modal
+    // =========================================================================
+    function openCreateUserModal() {
+        if (createUserModal) createUserModal.classList.remove('hidden');
+        if (createUserErrorMsg) createUserErrorMsg.classList.add('hidden');
+        if (createUserSuccessMsg) createUserSuccessMsg.classList.add('hidden');
+    }
+
+    function closeCreateUserModal() {
+        if (createUserModal) createUserModal.classList.add('hidden');
+    }
+
+    if (openCreateUserModalBtn) openCreateUserModalBtn.addEventListener('click', openCreateUserModal);
+    if (quickAddUserBtn) quickAddUserBtn.addEventListener('click', openCreateUserModal);
+    if (closeCreateUserModalBtn) closeCreateUserModalBtn.addEventListener('click', closeCreateUserModal);
+
+    if (createUserForm) {
+        createUserForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const newUsername = document.getElementById('newUsername').value.trim();
+            const newPassword = document.getElementById('newPassword').value.trim();
+            const newEmail = document.getElementById('newEmail').value.trim();
+            const newIsAdmin = document.getElementById('newIsAdmin').checked;
+            const submitBtn = document.getElementById('submitCreateUserBtn');
+
+            if (!newUsername || !newPassword) return;
+
+            if (submitBtn) submitBtn.disabled = true;
+
+            try {
+                const response = await fetch('/api/admin/users/create/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken') || ''
+                    },
+                    body: JSON.stringify({
+                        username: newUsername,
+                        password: newPassword,
+                        email: newEmail,
+                        is_admin: newIsAdmin
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.status === 'success') {
+                    if (createUserSuccessMsg) {
+                        createUserSuccessMsg.textContent = data.message;
+                        createUserSuccessMsg.classList.remove('hidden');
+                    }
+                    if (createUserErrorMsg) createUserErrorMsg.classList.add('hidden');
+                    createUserForm.reset();
+                } else {
+                    if (createUserErrorMsg) {
+                        createUserErrorMsg.textContent = data.message || 'فشل إنشاء الحساب';
+                        createUserErrorMsg.classList.remove('hidden');
+                    }
+                    if (createUserSuccessMsg) createUserSuccessMsg.classList.add('hidden');
+                }
+            } catch (err) {
+                if (createUserErrorMsg) {
+                    createUserErrorMsg.textContent = 'حدث خطأ أثناء إنشاء الحساب';
+                    createUserErrorMsg.classList.remove('hidden');
+                }
+            } finally {
+                if (submitBtn) submitBtn.disabled = false;
+            }
+        });
+    }
+
+    // =========================================================================
+    // 3. Navigation & View Switcher (SPA)
     // =========================================================================
     window.switchView = function(targetViewId) {
         if (!targetViewId || !document.getElementById(targetViewId)) return;
@@ -256,6 +347,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         closeMobileSidebar();
 
+        if (targetViewId === 'reelsView') loadReels();
+        if (targetViewId === 'ticketsView') loadTickets();
         if (targetViewId === 'searchView') {
             performSearch();
             if (searchInput) searchInput.focus();
@@ -274,9 +367,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // =========================================================================
-    // 3. Mobile Drawer Controls
-    // =========================================================================
     function openMobileSidebar() {
         if (sidebar) sidebar.classList.add('open');
         if (sidebarOverlay) sidebarOverlay.classList.add('active');
@@ -292,7 +382,225 @@ document.addEventListener('DOMContentLoaded', () => {
     if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeMobileSidebar);
 
     // =========================================================================
-    // 4. Live AJAX Search via Django API
+    // 4. Reels Platform Engine
+    // =========================================================================
+    async function loadReels() {
+        if (!reelsGrid) return;
+        try {
+            const response = await fetch('/api/reels/');
+            const data = await response.json();
+            renderReels(data.reels || []);
+        } catch (err) {
+            console.error('Reels load error:', err);
+        }
+    }
+
+    function renderReels(reels) {
+        if (!reelsGrid) return;
+        if (!reels || reels.length === 0) {
+            reelsGrid.innerHTML = `<div class="empty-state"><p>لا توجد ريلزات متوفرة حالياً</p></div>`;
+            return;
+        }
+
+        reelsGrid.innerHTML = reels.map(r => `
+            <div class="reel-card">
+                <div class="reel-video-container">
+                    <video class="reel-video" src="${r.video_url}" poster="${r.thumbnail_url || ''}" controls preload="metadata"></video>
+                    <div class="reel-overlay">
+                        <div class="reel-top-bar">
+                            <span class="reel-category-tag">#${r.category}</span>
+                        </div>
+                        <div class="reel-bottom-bar">
+                            <div class="reel-publisher">@${r.publisher}</div>
+                            <h3 class="reel-title">${r.title}</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="reel-actions-bar">
+                    <button class="btn-like" onclick="likeReel(${r.id}, this)">
+                        <i class="bi bi-heart-fill"></i> <span class="like-count">${r.likes_count}</span>
+                    </button>
+                    <span class="reel-views"><i class="bi bi-eye"></i> ${r.views_count.toLocaleString()}</span>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    window.likeReel = async function(reelId, btnElement) {
+        try {
+            const response = await fetch(`/api/reels/${reelId}/like/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken') || ''
+                }
+            });
+            const data = await response.json();
+            if (response.ok && data.status === 'success') {
+                const countSpan = btnElement.querySelector('.like-count');
+                if (countSpan) countSpan.textContent = data.likes_count;
+                btnElement.classList.add('liked');
+            }
+        } catch (err) {
+            console.error('Like error:', err);
+        }
+    };
+
+    // =========================================================================
+    // 5. Support Ticket System Engine
+    // =========================================================================
+    async function loadTickets() {
+        if (!ticketsContainer) return;
+        try {
+            const response = await fetch('/api/tickets/');
+            const data = await response.json();
+            renderTickets(data.tickets || []);
+        } catch (err) {
+            console.error('Tickets load error:', err);
+        }
+    }
+
+    function renderTickets(tickets) {
+        if (!ticketsContainer) return;
+        if (ticketsCountBadge) ticketsCountBadge.textContent = tickets.length;
+
+        if (!tickets || tickets.length === 0) {
+            ticketsContainer.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon"><i class="bi bi-inbox-fill"></i></div>
+                    <p>لا توجد تذاكر دعم فني حالياً. يمكنك إرسال أول تذكرة من النموذج المجاور!</p>
+                </div>
+            `;
+            return;
+        }
+
+        const isSuperuser = currentUser && currentUser.is_superuser;
+
+        ticketsContainer.innerHTML = tickets.map(t => `
+            <div class="ticket-card" id="ticket-${t.id}">
+                <div class="ticket-header">
+                    <span class="ticket-id">تذكرة #${t.id} - ${t.sender_name}</span>
+                    <span class="badge-status status-${t.status}">
+                        <i class="bi bi-circle-fill"></i> ${t.status_display}
+                    </span>
+                </div>
+                <h4 class="ticket-title">${t.title}</h4>
+                <p class="ticket-desc">${t.description}</p>
+                
+                ${t.admin_reply ? `
+                    <div class="ticket-admin-reply-box">
+                        <div class="reply-header"><i class="bi bi-shield-check"></i> رد الإدارة (الأدمن):</div>
+                        <p class="reply-text">${t.admin_reply}</p>
+                    </div>
+                ` : ''}
+
+                <div class="ticket-footer">
+                    <span>${t.created_at}</span>
+                    ${isSuperuser ? `
+                        <button class="btn btn-outline btn-sm" onclick="openReplyModal(${t.id}, '${t.status}', \`${(t.admin_reply || '').replace(/`/g, '\\`')}\`)">
+                            <i class="bi bi-reply"></i> الرد وتغيير الحالة
+                        </button>
+                    ` : ''}
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // Submit New Ticket
+    if (createTicketForm) {
+        createTicketForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const titleInput = document.getElementById('ticketTitle');
+            const descInput = document.getElementById('ticketDescription');
+            const senderInput = document.getElementById('ticketSenderName');
+            const submitBtn = document.getElementById('submitTicketBtn');
+
+            if (!titleInput || !descInput) return;
+
+            const title = titleInput.value.trim();
+            const description = descInput.value.trim();
+            const sender_name = senderInput ? senderInput.value.trim() : '';
+
+            if (!title || !description) return;
+
+            if (submitBtn) submitBtn.disabled = true;
+
+            try {
+                const response = await fetch('/api/tickets/create/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken') || ''
+                    },
+                    body: JSON.stringify({ title, description, sender_name })
+                });
+
+                const data = await response.json();
+                if (response.ok && data.status === 'success') {
+                    alert(data.message);
+                    createTicketForm.reset();
+                    loadTickets();
+                } else {
+                    alert(data.message || 'فشل إرسال التذكرة');
+                }
+            } catch (err) {
+                alert('حدث خطأ أثناء إرسال التذكرة');
+            } finally {
+                if (submitBtn) submitBtn.disabled = false;
+            }
+        });
+    }
+
+    // Admin Ticket Reply Modal
+    window.openReplyModal = function(ticketId, currentStatus, currentReply) {
+        const replyTicketId = document.getElementById('replyTicketId');
+        const replyStatusSelect = document.getElementById('replyStatusSelect');
+        const replyAdminText = document.getElementById('replyAdminText');
+
+        if (replyTicketId) replyTicketId.value = ticketId;
+        if (replyStatusSelect) replyStatusSelect.value = currentStatus || 'resolved';
+        if (replyAdminText) replyAdminText.value = currentReply || '';
+
+        if (replyTicketModal) replyTicketModal.classList.remove('hidden');
+    };
+
+    function closeReplyModal() {
+        if (replyTicketModal) replyTicketModal.classList.add('hidden');
+    }
+
+    if (closeReplyTicketModalBtn) closeReplyTicketModalBtn.addEventListener('click', closeReplyModal);
+
+    if (replyTicketForm) {
+        replyTicketForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const ticketId = document.getElementById('replyTicketId').value;
+            const status = document.getElementById('replyStatusSelect').value;
+            const admin_reply = document.getElementById('replyAdminText').value.trim();
+
+            try {
+                const response = await fetch('/api/tickets/reply/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken') || ''
+                    },
+                    body: JSON.stringify({ ticket_id: ticketId, status, admin_reply })
+                });
+
+                const data = await response.json();
+                if (response.ok && data.status === 'success') {
+                    closeReplyModal();
+                    loadTickets();
+                } else {
+                    alert(data.message || 'فشل حفظ الرد');
+                }
+            } catch (err) {
+                alert('حدث خطأ أثناء تحديث التذكرة');
+            }
+        });
+    }
+
+    // =========================================================================
+    // 6. Live Search Engine
     // =========================================================================
     async function performSearch() {
         searchQuery = searchInput ? searchInput.value.trim() : '';
@@ -308,16 +616,10 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const url = `/api/search/?q=${encodeURIComponent(searchQuery)}&category=${encodeURIComponent(currentCategory)}`;
             const response = await fetch(url);
-            
-            if (!response.ok) {
-                throw new Error('فشل جلب البيانات من الخادم');
-            }
-
+            if (!response.ok) throw new Error('فشل البينات');
             const data = await response.json();
             renderSearchResults(data.results, data.count);
-
         } catch (error) {
-            console.error('Search error:', error);
             renderSearchResults([], 0);
         }
     }
@@ -360,9 +662,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (searchInput) {
         searchInput.addEventListener('input', () => {
             clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(() => {
-                performSearch();
-            }, 250);
+            debounceTimer = setTimeout(performSearch, 250);
         });
     }
 
@@ -398,7 +698,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Init User Status and initial search
+    // Init App
     checkUserStatus();
+    loadReels();
+    loadTickets();
     performSearch();
 });

@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ء - المنصة الرقمية السريعة</title>
-    <meta name="description" content="موقع ء - تطبيق صفحة واحدة مميز مع شريط جانبي ومحرك بحث فوري ونظام مستخدمين مبني بـ Python Django">
+    <title>ء ريلز - منصة الفيديوهات والتذاكر التفاعلية</title>
+    <meta name="description" content="موقع ء ريلز - منصة ريلزات احترافية، تذاكر دعم فني، ونظام مستخدمين مبني بـ Python Django">
     
     <!-- Google Fonts: Cairo & Readex Pro -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -27,8 +27,8 @@
                     <span class="logo-symbol">ء</span>
                 </div>
                 <div class="brand-info">
-                    <h1 class="brand-title">ء</h1>
-                    <span class="brand-subtitle">المنصة الرقمية</span>
+                    <h1 class="brand-title">ء <span class="brand-tag">REELS</span></h1>
+                    <span class="brand-subtitle">منصة الريلزات والدعم</span>
                 </div>
                 <button class="mobile-close-btn" id="mobileCloseBtn" aria-label="إغلاق القائمة">
                     <i class="bi bi-x-lg"></i>
@@ -41,13 +41,28 @@
                     <i class="bi bi-house-door-fill"></i>
                     <span>الرئيسية</span>
                 </a>
+                <a href="#reels" class="menu-item" data-view="reelsView">
+                    <i class="bi bi-camera-reels-fill"></i>
+                    <span>منصة الريلزات</span>
+                    <span class="menu-badge">جديد</span>
+                </a>
                 <a href="#search" class="menu-item" data-view="searchView">
                     <i class="bi bi-search"></i>
                     <span>صفحة البحث</span>
                 </a>
-                <a href="/admin/" target="_blank" class="menu-item admin-only-link hidden" id="adminPanelLink">
+                <a href="#tickets" class="menu-item" data-view="ticketsView">
+                    <i class="bi bi-ticket-detailed-fill"></i>
+                    <span>تذاكر الدعم الفني</span>
+                </a>
+
+                <div class="menu-label admin-only hidden" id="adminMenuSection">إدارة النظام (Admin)</div>
+                <button class="menu-item admin-only hidden" id="openCreateUserModalBtn">
+                    <i class="bi bi-person-plus-fill"></i>
+                    <span>إنشاء حساب مستخدم جديد</span>
+                </button>
+                <a href="/admin/" target="_blank" class="menu-item admin-only-link admin-only hidden" id="adminPanelLink">
                     <i class="bi bi-shield-lock-fill"></i>
-                    <span>لوحة التحكم (Django Admin)</span>
+                    <span>لوحة Django Admin</span>
                 </a>
             </nav>
 
@@ -61,7 +76,7 @@
                     <span class="status-dot"></span>
                     <span class="status-text">Django Auth | مفعّل</span>
                 </div>
-                <div class="footer-note">موقع ء &copy; 2026</div>
+                <div class="footer-note">موقع ء ريلز &copy; 2026</div>
             </div>
         </aside>
 
@@ -89,18 +104,18 @@
                     <!-- Hero Section -->
                     <div class="hero-card">
                         <div class="hero-content">
-                            <span class="hero-badge"><i class="bi bi-stars"></i> مرحباً بك في منصة ء</span>
-                            <h2 class="hero-title">بساطة، سرعة، ونظام إدارة متكامل</h2>
+                            <span class="hero-badge"><i class="bi bi-stars"></i> مرحباً بك في منصة ء ريلز</span>
+                            <h2 class="hero-title">فيديوهات قصيرة، تذاكر دعم، وإدارة احترافية</h2>
                             <p class="hero-desc">
-                                موقع متكامل بصفحة واحدة وتنقل سلس مع شريط جانبي تفاعلي، نظام تسجيل دخول وحساب أدمن محمي، ومحرك بحث فوري معالج بلغة بايثون ديجانجو وجاهز للنشر على Fly.io.
+                                منصة ريلزات متكاملة بصفحة واحدة (SPA) مع دعم البلاغات وتذاكر الدعم الفني التفاعلية وتتبع الحالات، بالإضافة لإدارة الحسابات الشاملة مبنية بـ Python Django.
                             </p>
                             <div class="hero-actions">
-                                <button class="btn btn-primary" onclick="switchView('searchView')">
-                                    <i class="bi bi-search"></i> التوجه إلى صفحة البحث
+                                <button class="btn btn-primary" onclick="switchView('reelsView')">
+                                    <i class="bi bi-camera-reels-fill"></i> تصفح الريلزات الآن
                                 </button>
-                                <a href="/admin/" target="_blank" class="btn btn-outline">
-                                    <i class="bi bi-shield-lock"></i> لوحة تحكم الأدمن
-                                </a>
+                                <button class="btn btn-outline" onclick="switchView('ticketsView')">
+                                    <i class="bi bi-ticket-detailed"></i> تقديم تذكرة دعم
+                                </button>
                             </div>
                         </div>
                         <div class="hero-illustration">
@@ -113,32 +128,35 @@
                     <div class="admin-welcome-banner hidden" id="adminWelcomeBanner">
                         <div class="banner-icon"><i class="bi bi-person-check-fill"></i></div>
                         <div class="banner-info">
-                            <h4>مسجل كـ مسؤول (Admin)</h4>
-                            <p>أهلاً بك <strong id="adminUsernameDisplay">admin</strong>! لديك كامل الصلاحيات لإدارة الموقع والدخول إلى <a href="/admin/" target="_blank">لوحة تحكم Django Admin</a>.</p>
+                            <h4>أهلاً بك يا أدمن (<span id="adminUsernameDisplay">admin</span>)</h4>
+                            <p>يمكنك إنشاء حسابات مستخدمين جديدة، الرد على تذاكر الدعم الفني وتغيير حالتها إلى "تم حل المشكلة" فوراً.</p>
                         </div>
+                        <button class="btn btn-primary btn-sm mr-auto" id="quickAddUserBtn">
+                            <i class="bi bi-person-plus"></i> إضافة مستخدم
+                        </button>
                     </div>
 
                     <!-- Statistics Grid -->
                     <div class="stats-grid">
                         <div class="stat-card">
-                            <div class="stat-icon icon-blue"><i class="bi bi-lightning-charge-fill"></i></div>
+                            <div class="stat-icon icon-blue"><i class="bi bi-camera-reels-fill"></i></div>
                             <div class="stat-details">
-                                <span class="stat-value">0.02 ث</span>
-                                <span class="stat-label">سرعة الاستجابة</span>
+                                <span class="stat-value" id="statsReelsCount">{{ reels_count }}</span>
+                                <span class="stat-label">فيديو ريلز</span>
                             </div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-icon icon-purple"><i class="bi bi-database-fill-check"></i></div>
+                            <div class="stat-icon icon-purple"><i class="bi bi-ticket-detailed-fill"></i></div>
                             <div class="stat-details">
-                                <span class="stat-value">{{ items_count }}</span>
-                                <span class="stat-label">عنصر مفهرس</span>
+                                <span class="stat-value" id="statsTicketsCount">{{ tickets_count }}</span>
+                                <span class="stat-label">تذكرة دعم فني</span>
                             </div>
                         </div>
                         <div class="stat-card">
                             <div class="stat-icon icon-green"><i class="bi bi-shield-check"></i></div>
                             <div class="stat-details">
                                 <span class="stat-value">100%</span>
-                                <span class="stat-label">أمان ومحمي</span>
+                                <span class="stat-label">حماية واستجابة</span>
                             </div>
                         </div>
                         <div class="stat-card">
@@ -149,48 +167,81 @@
                             </div>
                         </div>
                     </div>
+                </section>
 
-                    <!-- Highlights & Features Section -->
-                    <div class="features-section">
-                        <h3 class="section-heading"><i class="bi bi-grid-fill"></i> مميزات منصة ء</h3>
-                        <div class="features-grid">
-                            <div class="feature-card">
-                                <div class="feature-icon"><i class="bi bi-layout-sidebar-reverse"></i></div>
-                                <h4>قائمة جانبية تفاعلية</h4>
-                                <p>تنقل سلس ومباشر بين الصفحة الرئيسية وصفحة البحث دون الحاجة لإعادة تحميل الصفحة.</p>
-                            </div>
-                            <div class="feature-card">
-                                <div class="feature-icon"><i class="bi bi-person-badge-fill"></i></div>
-                                <h4>نظام مستخدمين وأدمن</h4>
-                                <p>حساب أدمن مجهز لدخول لوحة التحكم وسلاسل الأمان في إطار Django Auth.</p>
-                            </div>
-                            <div class="feature-card">
-                                <div class="feature-icon"><i class="bi bi-search-heart"></i></div>
-                                <h4>بحث فوري مع Django API</h4>
-                                <p>محرك بحث ديناميكي يعتمد على نقاط النهاية السريعة إرجاع النتائج بتنسيق JSON دقيق.</p>
+                <!-- VIEW 2: REELS SECTION (منصة الريلزات) -->
+                <section class="view-section" id="reelsView">
+                    <div class="view-header-card">
+                        <div class="view-title-area">
+                            <h2><i class="bi bi-camera-reels-fill text-gradient"></i> ريلزات منصة ء الاحترافية</h2>
+                            <p>شاهد أحدث الفيديوهات القصيرة واستمتع بتجربة تفاعلية مذهلة</p>
+                        </div>
+                    </div>
+
+                    <div class="reels-grid" id="reelsGrid">
+                        <!-- Dynamic Reels generated by app.js -->
+                    </div>
+                </section>
+
+                <!-- VIEW 3: TICKETS SECTION (تذاكر الدعم الفني) -->
+                <section class="view-section" id="ticketsView">
+                    <div class="view-header-card">
+                        <div class="view-title-area">
+                            <h2><i class="bi bi-ticket-detailed-fill text-amber"></i> نظام تذاكر الدعم الفني</h2>
+                            <p>أبلغنا عن أي مشكلة تظهر لك في الموقع وتتبع حالة المعالجة والردود مباشرة</p>
+                        </div>
+                    </div>
+
+                    <div class="tickets-layout">
+                        <!-- Ticket Form Card -->
+                        <div class="ticket-form-card">
+                            <h3><i class="bi bi-plus-circle-fill"></i> إرسال تذكرة دعم جديدة</h3>
+                            <form id="createTicketForm">
+                                <div class="form-group">
+                                    <label for="ticketTitle">عنوان المشكلة أو الاستفسار</label>
+                                    <input type="text" id="ticketTitle" placeholder="مثال: مشكلة في تشغيل فيديو الريلز" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="ticketSenderName">اسمك</label>
+                                    <input type="text" id="ticketSenderName" placeholder="أدخل اسمك هنا">
+                                </div>
+                                <div class="form-group">
+                                    <label for="ticketDescription">تفاصيل المشكلة والوصف</label>
+                                    <textarea id="ticketDescription" rows="4" placeholder="اشرح لنا المشكلة التي واجهتك بالضبط..." required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100" id="submitTicketBtn">
+                                    <i class="bi bi-send-fill"></i> إرسال التذكرة للإدارة
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Tickets List -->
+                        <div class="tickets-list-area">
+                            <h3><i class="bi bi-journal-check"></i> قائمة التذاكر والبلاغات (<span id="ticketsCountBadge">0</span>)</h3>
+                            <div class="tickets-container" id="ticketsContainer">
+                                <!-- Dynamic tickets generated by app.js -->
                             </div>
                         </div>
                     </div>
                 </section>
 
-                <!-- VIEW 2: SEARCH SECTION (صفحة البحث) -->
+                <!-- VIEW 4: SEARCH SECTION (صفحة البحث) -->
                 <section class="view-section" id="searchView">
                     <div class="search-header-card">
                         <div class="search-title-area">
-                            <h2><i class="bi bi-search"></i> محرك البحث في موقع ء</h2>
-                            <p>ابحث عن المقالات، الأدوات، الخدمات، والمستندات بسرعة فائقة</p>
+                            <h2><i class="bi bi-search"></i> محرك البحث الشامل</h2>
+                            <p>ابحث عن المقالات، الريلزات، الخدمات، والتذاكر بسهولة</p>
                         </div>
 
                         <!-- Search Input Bar -->
                         <div class="search-bar-container">
                             <i class="bi bi-search search-input-icon"></i>
-                            <input type="text" id="searchInput" class="search-input" placeholder="اكتب كلمتك للبحث هنا... (مثال: بحث، Django، أدوات)" autocomplete="off">
+                            <input type="text" id="searchInput" class="search-input" placeholder="اكتب كلمتك للبحث... (مثال: ريلز، دعم، أدوات)" autocomplete="off">
                             <button class="search-clear-btn" id="searchClearBtn" aria-label="مسح البحث">
                                 <i class="bi bi-x-circle-fill"></i>
                             </button>
                         </div>
 
-                        <!-- Category Filters -->
                         <div class="category-pills">
                             <button class="pill-btn active" data-category="all">الكل</button>
                             <button class="pill-btn" data-category="articles">مقالات</button>
@@ -200,18 +251,13 @@
                         </div>
                     </div>
 
-                    <!-- Search Status & Meta Bar -->
                     <div class="search-meta-bar">
                         <span id="resultsCountText">جاري تحميل البيانات...</span>
                         <span class="live-indicator"><i class="bi bi-arrow-repeat spin-icon"></i> متصل بـ Django API</span>
                     </div>
 
-                    <!-- Search Results Grid -->
-                    <div class="results-grid" id="resultsGrid">
-                        <!-- Dynamic Cards generated by app.js -->
-                    </div>
+                    <div class="results-grid" id="resultsGrid"></div>
 
-                    <!-- Empty Results State -->
                     <div class="empty-state hidden" id="emptyState">
                         <div class="empty-icon"><i class="bi bi-emoji-frown"></i></div>
                         <h3>لم نجد نتائج تطابق بحثك</h3>
@@ -255,6 +301,71 @@
                     بيانات حساب الأدمن الافتراضية:<br>
                     اسم المستخدم: <code>admin</code> | كلمة المرور: <code>Admin123456!</code>
                 </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Create User Modal (For Admin) -->
+    <div class="modal-overlay hidden" id="createUserModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3><i class="bi bi-person-plus-fill"></i> إنشاء حساب مستخدم جديد (الأدمن)</h3>
+                <button class="modal-close-btn" id="closeCreateUserModalBtn"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <form id="createUserForm" class="modal-body">
+                <div class="form-error hidden" id="createUserErrorMsg"></div>
+                <div class="form-success hidden" id="createUserSuccessMsg"></div>
+                <div class="form-group">
+                    <label for="newUsername">اسم المستخدم الجديد</label>
+                    <input type="text" id="newUsername" placeholder="أدخل اسم المستخدم..." required>
+                </div>
+                <div class="form-group">
+                    <label for="newPassword">كلمة المرور</label>
+                    <input type="password" id="newPassword" placeholder="أدخل كلمة المرور..." required>
+                </div>
+                <div class="form-group">
+                    <label for="newEmail">البريد الإلكتروني (اختياري)</label>
+                    <input type="email" id="newEmail" placeholder="user@example.com">
+                </div>
+                <div class="form-group checkbox-group">
+                    <label>
+                        <input type="checkbox" id="newIsAdmin"> جعل الحساب مسؤوليته أدمن (Superuser)
+                    </label>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary w-100" id="submitCreateUserBtn">
+                        <i class="bi bi-check-circle-fill"></i> إنشاء الحساب الآن
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Ticket Reply Modal (For Admin) -->
+    <div class="modal-overlay hidden" id="replyTicketModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3><i class="bi bi-reply-fill"></i> الرد على التذكرة وتحديث الحالة</h3>
+                <button class="modal-close-btn" id="closeReplyTicketModalBtn"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <form id="replyTicketForm" class="modal-body">
+                <input type="hidden" id="replyTicketId">
+                <div class="form-group">
+                    <label for="replyStatusSelect">تغيير حالة التذكرة</label>
+                    <select id="replyStatusSelect" class="form-select">
+                        <option value="resolved">🟢 تم حل المشكلة</option>
+                        <option value="in_progress">🔵 قيد المعالجة</option>
+                        <option value="pending">🟡 بانتظار الرد</option>
+                        <option value="closed">🔴 مغلقة</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="replyAdminText">رد الإدارة على المستخدم</label>
+                    <textarea id="replyAdminText" rows="4" placeholder="اكتب رد الإدارة والتوجيهات هنا..." required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-check2-circle"></i> حفظ الرد وتحديث الحالة
+                </button>
             </form>
         </div>
     </div>
