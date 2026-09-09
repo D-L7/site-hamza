@@ -15,4 +15,5 @@ RUN python manage.py collectstatic --noinput
 
 EXPOSE 8080
 
-CMD ["gunicorn", "hamza_project.wsgi:application", "--bind", "0.0.0.0:8080"]
+# Run migrations, initialize database data & admin account, then start Gunicorn
+CMD ["sh", "-c", "python manage.py migrate --noinput && python manage.py init_data && gunicorn hamza_project.wsgi:application --bind 0.0.0.0:8080"]

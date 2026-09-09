@@ -53,14 +53,23 @@ SEARCH_DATABASE = [
 @ensure_csrf_cookie
 def index(request):
     """Render the single-page Reels & Support platform 'ء'."""
-    reels_count = Reel.objects.count()
-    tickets_count = Ticket.objects.count()
+    try:
+        reels_count = Reel.objects.count()
+    except Exception:
+        reels_count = 0
+
+    try:
+        tickets_count = Ticket.objects.count()
+    except Exception:
+        tickets_count = 0
+
     return render(request, 'index.html', {
         'site_name': 'ء ريلز',
         'reels_count': reels_count,
         'tickets_count': tickets_count,
         'user': request.user
     })
+
 
 def search_api(request):
     """API endpoint returning search results in JSON format."""
