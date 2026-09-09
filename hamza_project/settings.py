@@ -11,7 +11,15 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-hamza-site-secret-key
 
 DEBUG = os.environ.get('DEBUG', 'True').lower() in ('true', '1', 't')
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',')
+ALLOWED_HOSTS = ['*']
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.fly.dev',
+    'http://*.fly.dev',
+    'http://127.0.0.1:8000',
+    'http://localhost:8000',
+]
+
 
 INSTALLED_APPS = [
     'whitenoise.runserver_nostatic',
@@ -76,6 +84,6 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
